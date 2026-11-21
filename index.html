@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Blocks Count Battle</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -17,7 +17,7 @@ body{background:linear-gradient(180deg,#e3ecf5 0%,#edf2f8 35%,#f2f5fa 100%)}
 .tz{z-index:2;position:relative}
 .title-main{font-size:28px;font-weight:700;letter-spacing:.04em;text-shadow:0 0 40px rgba(100,180,220,.3);line-height:1.2;text-align:center}
 .title-main span{color:#64b5f6}
-.title-desc{font-size:11px;opacity:.35;margin-top:10px;line-height:1.7;text-align:center;max-width:300px}
+.title-desc{font-size:12px;opacity:.78;margin-top:10px;line-height:1.7;text-align:center;max-width:300px}
 .mode-row{display:flex;gap:14px;margin-top:22px;flex-wrap:wrap;justify-content:center}
 .btn-mode{padding:13px 30px;border-radius:12px;border:none;color:#fff;font-family:'Space Mono',monospace;font-weight:700;font-size:13px;letter-spacing:.08em;cursor:pointer;text-transform:uppercase;transition:transform .15s,box-shadow .15s;min-width:140px}
 .btn-mode:hover{transform:scale(1.04)}
@@ -27,7 +27,7 @@ body{background:linear-gradient(180deg,#e3ecf5 0%,#edf2f8 35%,#f2f5fa 100%)}
 .mode-card:hover{transform:scale(1.04)}
 .mode-card .mc-icon{font-size:32px}
 .mode-card .mc-title{font-size:14px;font-weight:700;letter-spacing:.08em}
-.mode-card .mc-desc{font-size:10px;opacity:.6;line-height:1.5;max-width:140px}
+.mode-card .mc-desc{font-size:11px;opacity:.8;line-height:1.5;max-width:140px}
 .btn-back{margin-top:18px;padding:8px 24px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:transparent;color:#fff;font-family:'Space Mono',monospace;font-weight:700;font-size:11px;cursor:pointer;opacity:.5;transition:opacity .2s}
 .btn-back:hover{opacity:.8}
 
@@ -74,40 +74,52 @@ body{background:linear-gradient(180deg,#e3ecf5 0%,#edf2f8 35%,#f2f5fa 100%)}
 
 /* Results */
 #results-screen{background:linear-gradient(135deg,#0b1628 0%,#132744 50%,#0e1f3d 100%);color:#fff;gap:22px}
-.rwt{font-size:26px;font-weight:700;text-shadow:0 0 30px currentColor}
+.rwt{font-size:clamp(18px,5.8vw,26px);font-weight:700;text-align:center;text-shadow:0 0 30px currentColor}
 .rcr{display:flex;gap:32px;margin-top:8px}
 .rc{text-align:center;padding:18px 24px;border-radius:14px;min-width:120px}
-.rc .lb{font-size:12px;opacity:.5;margin-bottom:8px}.rc .sv{font-size:32px;font-weight:700}.rc .tm{font-size:10px;opacity:.4;margin-top:4px}
+.rc .lb{font-size:12px;opacity:.8;margin-bottom:8px}.rc .sv{font-size:32px;font-weight:700}.rc .tm{font-size:11px;opacity:.8;margin-top:4px}
 .bre{margin-top:14px;padding:11px 32px;border-radius:10px;border:2px solid rgba(255,255,255,.2);background:transparent;color:#fff;font-family:'Space Mono',monospace;font-weight:700;font-size:13px;cursor:pointer;transition:all .2s}
 .bre:hover{background:rgba(255,255,255,.1)}
+
+/* Leave room for longer English labels on narrow screens. */
+@media (max-width: 420px) {
+  .mode-row{padding-inline:12px}
+  .mode-card{padding-inline:16px;min-width:132px}
+  .mode-card .mc-desc{max-width:112px}
+  .rov{gap:10px;padding-inline:8px}
+  .rr{min-width:0}
+  .rwt{padding-inline:12px}
+  .rcr{gap:10px;padding-inline:8px}
+  .rc{min-width:0;padding:14px 10px}
+}
 </style>
 </head>
 <body>
 
 <div id="title-screen" class="screen">
-  <canvas id="title-cubes-bg"></canvas>
-  <div class="tz" style="font-size:10px;letter-spacing:.35em;opacity:.3;text-transform:uppercase;margin-bottom:6px">选择人数</div>
+  <canvas id="title-cubes-bg" aria-hidden="true"></canvas>
+  <div class="tz" style="font-size:10px;letter-spacing:.35em;opacity:.67;text-transform:uppercase;margin-bottom:6px">Choose players</div>
   <div class="title-main tz">BLOCKS COUNT<br><span>BATTLE</span></div>
-  <div class="title-desc tz">数方块 · 比速度 · 拼眼力<br>5回合 · 每回合20秒 · 答对多者胜</div>
+  <div class="title-desc tz">Count every block before time runs out.<br>5 rounds · 20 seconds per round</div>
   <div class="mode-row tz">
-    <button class="btn-mode m1" onclick="pickPlayers(1)">👤 单人模式</button>
-    <button class="btn-mode m2" onclick="pickPlayers(2)">👥 双人对战</button>
+    <button class="btn-mode m1" onclick="pickPlayers(1)">👤 Solo</button>
+    <button class="btn-mode m2" onclick="pickPlayers(2)">👥 Two Players</button>
   </div>
 </div>
 
 <div id="mode-screen" class="screen hidden">
-  <canvas id="mode-cubes-bg"></canvas>
-  <div class="tz" style="font-size:10px;letter-spacing:.35em;opacity:.3;text-transform:uppercase;margin-bottom:4px" id="mode-label">单人模式</div>
-  <div class="title-main tz" style="font-size:22px">选择玩法</div>
+  <canvas id="mode-cubes-bg" aria-hidden="true"></canvas>
+  <div class="tz" style="font-size:10px;letter-spacing:.35em;opacity:.67;text-transform:uppercase;margin-bottom:4px" id="mode-label">Solo</div>
+  <div class="title-main tz" style="font-size:22px">Choose a game mode</div>
   <div class="mode-row tz" style="margin-top:16px;gap:18px">
     <div class="mode-card" style="background:linear-gradient(135deg,rgba(77,172,223,.2),rgba(58,142,200,.15));border:2px solid rgba(77,172,223,.3)" onclick="startGame('normal')">
-      <div class="mc-icon">🧊</div><div class="mc-title">普通模式</div><div class="mc-desc">方块静止摆放<br>观察并数出方块数量</div>
+      <div class="mc-icon">🧊</div><div class="mc-title">Classic</div><div class="mc-desc">The stack stays on screen while you count.</div>
     </div>
     <div class="mode-card" style="background:linear-gradient(135deg,rgba(142,68,173,.2),rgba(108,52,131,.15));border:2px solid rgba(142,68,173,.3)" onclick="startGame('memory')">
-      <div class="mc-icon">🧠</div><div class="mc-title">记忆模式</div><div class="mc-desc">方块滑过画面5秒<br>凭记忆作答</div>
+      <div class="mc-icon">🧠</div><div class="mc-title">Memory</div><div class="mc-desc">The stack disappears after 5 seconds. Answer from memory.</div>
     </div>
   </div>
-  <button class="btn-back tz" onclick="showScr('title')">← 返回</button>
+  <button class="btn-back tz" onclick="showScr('title')">← Back</button>
 </div>
 
 <div id="game-screen" class="hidden">
@@ -124,13 +136,13 @@ body{background:linear-gradient(180deg,#e3ecf5 0%,#edf2f8 35%,#f2f5fa 100%)}
   <div class="ctr" id="ctr-2p">
     <div class="pp l" style="border:2px solid rgba(42,157,143,.08)">
       <div class="bar" style="background:linear-gradient(135deg,#2a9d8f,#4ecdc4)"></div>
-      <div class="nm" style="color:#2a9d8f">玩家 A</div>
+      <div class="nm" style="color:#2a9d8f">Player A</div>
       <div class="ans-display" id="ad0">0</div>
       <div class="numpad" id="np0"></div>
     </div>
     <div class="pp r" style="border:2px solid rgba(196,69,54,.08)">
       <div class="bar" style="background:linear-gradient(135deg,#c44536,#ff6b6b)"></div>
-      <div class="nm" style="color:#c44536">玩家 B</div>
+      <div class="nm" style="color:#c44536">Player B</div>
       <div class="ans-display" id="ad1">0</div>
       <div class="numpad" id="np1"></div>
     </div>
@@ -139,7 +151,7 @@ body{background:linear-gradient(180deg,#e3ecf5 0%,#edf2f8 35%,#f2f5fa 100%)}
   <div class="ctr" id="ctr-1p" style="display:none;justify-content:center">
     <div class="pp solo" style="border:2px solid rgba(42,157,143,.08)">
       <div class="bar" style="background:linear-gradient(135deg,#4dacdf,#3a8ec8)"></div>
-      <div class="nm" style="color:#2a9d8f">你的答案</div>
+      <div class="nm" style="color:#2a9d8f">Your answer</div>
       <div class="ans-display" id="sad0">0</div>
       <div class="numpad" id="snp0"></div>
     </div>
@@ -147,10 +159,10 @@ body{background:linear-gradient(180deg,#e3ecf5 0%,#edf2f8 35%,#f2f5fa 100%)}
 </div>
 
 <div id="results-screen" class="screen hidden">
-  <div style="font-size:11px;letter-spacing:.3em;opacity:.4;text-transform:uppercase">游戏结束</div>
+  <div style="font-size:11px;letter-spacing:.3em;opacity:.4;text-transform:uppercase">Game over</div>
   <div class="rwt" id="wt"></div>
   <div class="rcr" id="rcr"></div>
-  <button class="bre" id="bre">再来一局</button>
+  <button class="bre" id="bre">Play again</button>
 </div>
 
 <script>
@@ -167,10 +179,10 @@ function buildNumpad(containerId, playerIdx, accentColor, subBg){
   const c=document.getElementById(containerId);
   let html='';
   for(let d=1;d<=9;d++) html+=`<button class="nk digit" onclick="numInput(${playerIdx},${d})">${d}</button>`;
-  html+=`<button class="nk del" onclick="numClear(${playerIdx})">清除</button>`;
+  html+=`<button class="nk del" onclick="numClear(${playerIdx})">Clear</button>`;
   html+=`<button class="nk digit" onclick="numInput(${playerIdx},0)">0</button>`;
-  html+=`<button class="nk del" onclick="numDel(${playerIdx})">←</button>`;
-  html+=`<button class="nk act sub-btn" id="sb${containerId}" style="background:${subBg}" onclick="sub(${playerIdx})">提交</button>`;
+  html+=`<button class="nk del" aria-label="Backspace" onclick="numDel(${playerIdx})">←</button>`;
+  html+=`<button class="nk act sub-btn" id="sb${containerId}" style="background:${subBg}" onclick="sub(${playerIdx})">Submit</button>`;
   c.innerHTML=html;
 }
 
@@ -275,8 +287,8 @@ function upUI(){
     document.querySelectorAll('#np0 .nk').forEach(b=>b.disabled=dis0);
     document.querySelectorAll('#np1 .nk').forEach(b=>b.disabled=dis1);
     const sb0=document.getElementById('sbnp0'),sb1=document.getElementById('sbnp1');
-    if(sb0){sb0.textContent=P[0].sub?'已锁定 ✓':'提交';sb0.style.background=P[0].sub?'#ccc':'linear-gradient(135deg,#2a9d8f,#4ecdc4)';}
-    if(sb1){sb1.textContent=P[1].sub?'已锁定 ✓':'提交';sb1.style.background=P[1].sub?'#ccc':'linear-gradient(135deg,#c44536,#ff6b6b)';}
+    if(sb0){sb0.textContent=P[0].sub?'Locked ✓':'Submit';sb0.style.background=P[0].sub?'#ccc':'linear-gradient(135deg,#2a9d8f,#4ecdc4)';}
+    if(sb1){sb1.textContent=P[1].sub?'Locked ✓':'Submit';sb1.style.background=P[1].sub?'#ccc':'linear-gradient(135deg,#c44536,#ff6b6b)';}
     document.getElementById('sca').textContent='A: '+P[0].cc;
     document.getElementById('scb').textContent='B: '+P[1].cc;
     document.getElementById('scb').style.display='';
@@ -287,8 +299,8 @@ function upUI(){
     const dis=P[0].sub||ending||inputLocked;
     document.querySelectorAll('#snp0 .nk').forEach(b=>b.disabled=dis);
     const ssb=document.getElementById('sbsnp0');
-    if(ssb){ssb.textContent=P[0].sub?'已锁定 ✓':'提交';ssb.style.background=P[0].sub?'#ccc':'linear-gradient(135deg,#4dacdf,#3a8ec8)';}
-    document.getElementById('sca').textContent='得分: '+P[0].cc+'/'+TR;
+    if(ssb){ssb.textContent=P[0].sub?'Locked ✓':'Submit';ssb.style.background=P[0].sub?'#ccc':'linear-gradient(135deg,#4dacdf,#3a8ec8)';}
+    document.getElementById('sca').textContent='Score: '+P[0].cc+'/'+TR;
     document.getElementById('scb').style.display='none';
   }
   document.getElementById('rl').textContent=(rnd+1)+'/'+TR;
@@ -304,7 +316,7 @@ function showScr(id){
 }
 function pickPlayers(m){
   mode=m;
-  document.getElementById('mode-label').textContent=m===1?'单人模式':'双人对战';
+  document.getElementById('mode-label').textContent=m===1?'Solo':'Two Players';
   showScr('mode');
 }
 function startGame(sm){
@@ -357,13 +369,13 @@ function endRound(){
   const ov=document.getElementById('rov');ov.classList.remove('hidden');
   if(mode===1){
     const ok=P[0].a===bCnt;
-    document.getElementById('ra').innerHTML=`<div class="em">${ok?'✅':'❌'}</div><div class="ans" style="color:#2a9d8f">你的答案: ${P[0].a}</div><div class="cor">正确答案: ${bCnt}</div>`;
+    document.getElementById('ra').innerHTML=`<div class="em">${ok?'✅':'❌'}</div><div class="ans" style="color:#2a9d8f">Your answer: ${P[0].a}</div><div class="cor">Correct answer: ${bCnt}</div>`;
     document.getElementById('rb').innerHTML='';
   } else {
     [0,1].forEach(i=>{
       const el=document.getElementById(i?'rb':'ra');
       const ok=P[i].a===bCnt,cl=i?'#c44536':'#2a9d8f';
-      el.innerHTML=`<div class="em">${ok?'✅':'❌'}</div><div class="ans" style="color:${cl}">玩家 ${i?'B':'A'}: ${P[i].a}</div><div class="cor">正确答案: ${bCnt}</div>`;
+      el.innerHTML=`<div class="em">${ok?'✅':'❌'}</div><div class="ans" style="color:${cl}">Player ${i?'B':'A'}: ${P[i].a}</div><div class="cor">Correct answer: ${bCnt}</div>`;
     });
   }
   upUI();
@@ -372,19 +384,19 @@ function endRound(){
 function showResults(){
   showScr('results');
   const rcr=document.getElementById('rcr');
-  const tag=subMode==='memory'?' (记忆)':'';
+  const tag=subMode==='memory'?' (Memory)':'';
   if(mode===1){
     const p=P[0],we=document.getElementById('wt');
-    if(p.cc===TR){we.textContent='🏆 满分通关！'+tag;we.style.color='#ffd700';}
-    else if(p.cc>=3){we.textContent='👏 表现不错！'+tag;we.style.color='#4ecdc4';}
-    else{we.textContent='💪 再接再厉！'+tag;we.style.color='#ff6b6b';}
-    rcr.innerHTML=`<div class="rc" style="background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.15)"><div class="lb">你的成绩</div><div class="sv" style="color:#4ecdc4">${p.cc}/${TR}</div><div class="tm">总用时 ${p.tt.toFixed(1)}s</div></div>`;
+    if(p.cc===TR){we.textContent='🏆 Perfect score!'+tag;we.style.color='#ffd700';}
+    else if(p.cc>=3){we.textContent='👏 Nice work!'+tag;we.style.color='#4ecdc4';}
+    else{we.textContent='💪 Keep practicing!'+tag;we.style.color='#ff6b6b';}
+    rcr.innerHTML=`<div class="rc" style="background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.15)"><div class="lb">Your score</div><div class="sv" style="color:#4ecdc4">${p.cc}/${TR}</div><div class="tm">Total time: ${p.tt.toFixed(1)}s</div></div>`;
   } else {
     const a=P[0],b=P[1];let w;
     if(a.cc>b.cc)w=0;else if(b.cc>a.cc)w=1;
     else if(a.tt<b.tt)w=0;else if(b.tt<a.tt)w=1;else w=-1;
     const we=document.getElementById('wt');
-    we.textContent=(w===-1?'平局！':`🏆 玩家 ${w?'B':'A'} 获胜！`)+tag;
+    we.textContent=(w===-1?'It’s a tie!':`🏆 Player ${w?'B':'A'} wins!`)+tag;
     we.style.color=w===-1?'#ffd700':w===0?'#4ecdc4':'#ff6b6b';
     let h='';
     [0,1].forEach(i=>{
@@ -392,7 +404,7 @@ function showResults(){
       const bg=iw?'rgba(255,255,255,.1)':'rgba(255,255,255,.03)';
       const bd=iw?'2px solid rgba(255,255,255,.2)':'2px solid rgba(255,255,255,.06)';
       const cl=i?'#ff6b6b':'#4ecdc4';
-      h+=`<div class="rc" style="background:${bg};border:${bd}"><div class="lb">玩家 ${i?'B':'A'}</div><div class="sv" style="color:${cl}">${pl.cc}/${TR}</div><div class="tm">总用时 ${pl.tt.toFixed(1)}s</div></div>`;
+      h+=`<div class="rc" style="background:${bg};border:${bd}"><div class="lb">Player ${i?'B':'A'}</div><div class="sv" style="color:${cl}">${pl.cc}/${TR}</div><div class="tm">Total time: ${pl.tt.toFixed(1)}s</div></div>`;
     });rcr.innerHTML=h;
   }
 }
